@@ -47,6 +47,91 @@
     color:var(--muted);
   }
 
+  .search-wrap{
+    position:relative;
+    width:100%;
+    max-width:520px;
+    padding:14px 16px 0;
+  }
+  .search-box{
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+  .search-icon{
+    position:absolute;
+    left:14px;
+    font-size:15px;
+    color:var(--muted);
+    pointer-events:none;
+  }
+  .search-input{
+    width:100%;
+    font-family:'Work Sans',sans-serif;
+    font-size:14.5px;
+    color:var(--ink);
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:24px;
+    padding:11px 38px 11px 36px;
+    outline:none;
+  }
+  .search-input:focus{
+    border-color:var(--accent);
+  }
+  .search-clear{
+    position:absolute;
+    right:10px;
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:18px;
+    line-height:1;
+    cursor:pointer;
+    padding:4px;
+    display:none;
+  }
+  .search-results{
+    position:absolute;
+    top:calc(100% + 6px);
+    left:16px;
+    right:16px;
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:14px;
+    box-shadow:0 16px 32px -12px rgba(42,33,24,0.25);
+    max-height:320px;
+    overflow-y:auto;
+    z-index:40;
+    display:none;
+  }
+  .search-results.open{display:block;}
+  .search-item{
+    display:flex;
+    flex-direction:column;
+    gap:1px;
+    padding:11px 16px;
+    cursor:pointer;
+    border-bottom:1px solid var(--line);
+  }
+  .search-item:last-child{border-bottom:none;}
+  .search-item:hover, .search-item:active{background:var(--accent-soft);}
+  .search-item .si-name{
+    font-size:14.5px;
+    font-weight:600;
+    color:var(--ink);
+  }
+  .search-item .si-cat{
+    font-size:11.5px;
+    color:var(--muted);
+  }
+  .search-empty{
+    padding:16px;
+    text-align:center;
+    font-size:13px;
+    color:var(--muted);
+  }
+
   .cat-tabs{
     display:flex;
     gap:8px;
@@ -258,6 +343,15 @@
   <p class="subtitle">Bucătăria lumii</p>
 </header>
 
+<div class="search-wrap">
+  <div class="search-box">
+    <span class="search-icon">⌕</span>
+    <input type="text" class="search-input" id="searchInput" placeholder="Caută după nume sau ingredient...">
+    <button class="search-clear" id="searchClear" aria-label="Șterge căutarea">×</button>
+  </div>
+  <div class="search-results" id="searchResults"></div>
+</div>
+
 <div class="cat-tabs" id="catTabs"></div>
 
 <div class="stage" id="stage">
@@ -297,6 +391,13 @@ function commons(name){
 }
 function pexels(id){
   return 'https://images.pexels.com/photos/' + id + '/pexels-photo-' + id + '.jpeg?auto=compress&cs=tinysrgb&w=900';
+}
+function normalize(s){
+  return s.toLowerCase()
+    .replace(/[ăâ]/g,'a')
+    .replace(/[î]/g,'i')
+    .replace(/[șş]/g,'s')
+    .replace(/[țţ]/g,'t');
 }
 
 var CATEGORIES = [
@@ -735,6 +836,75 @@ function openPopup(){
 
 overlay.addEventListener('click', function(){
   overlay.classList.remove('open');
+});
+
+/* search by name or ingredient */
+var searchInput = document.getElementById('searchInput');
+var searchClear = document.getElementById('searchClear');
+var searchResults = document.getElementById('searchResults');
+
+function runSearch(){
+  var raw = searchInput.value.trim();
+  searchClear.style.display = raw ? 'block' : 'none';
+  if (!raw){
+    searchResults.classList.remove('open');
+    searchResults.innerHTML = '';
+    return;
+  }
+  var q = normalize(raw);
+  var matches = [];
+  recipes.forEach(function(r, idx){
+    var nameHit = normalize(r.name).indexOf(q) !== -1;
+    var ingHit = r.ing.some(function(i){ return normalize(i).indexOf(q) !== -1; });
+    if (nameHit || ingHit) matches.push(idx);
+  });
+
+  searchResults.innerHTML = '';
+  if (matches.length === 0){
+    var empty = document.createElement('div');
+    empty.className = 'search-empty';
+    empty.textContent = 'Nicio rețetă găsită.';
+    searchResults.appendChild(empty);
+  } else {
+    matches.slice(0, 25).forEach(function(idx){
+      var r = recipes[idx];
+      var item = document.createElement('div');
+      item.className = 'search-item';
+      var nameEl2 = document.createElement('div');
+      nameEl2.className = 'si-name';
+      nameEl2.textContent = r.name;
+      var catEl2 = document.createElement('div');
+      catEl2.className = 'si-cat';
+      catEl2.textContent = catFull(r.catKey);
+      item.appendChild(nameEl2);
+      item.appendChild(catEl2);
+      item.addEventListener('click', function(){
+        animateTo(idx, idx > current ? 1 : -1);
+        searchInput.value = '';
+        searchClear.style.display = 'none';
+        searchResults.classList.remove('open');
+        searchInput.blur();
+      });
+      searchResults.appendChild(item);
+    });
+  }
+  searchResults.classList.add('open');
+}
+
+searchInput.addEventListener('input', runSearch);
+searchInput.addEventListener('focus', function(){
+  if (searchInput.value.trim()) searchResults.classList.add('open');
+});
+searchClear.addEventListener('click', function(){
+  searchInput.value = '';
+  searchClear.style.display = 'none';
+  searchResults.classList.remove('open');
+  searchResults.innerHTML = '';
+});
+document.addEventListener('click', function(e){
+  if (!e.target.closest('.search-wrap')){
+    searchResults.classList.remove('open');
+  }
 });
 
 renderContent();
