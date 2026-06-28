@@ -30,7 +30,7 @@
   }
   header{
     text-align:center;
-    padding:28px 16px 6px;
+    padding:26px 16px 4px;
   }
   header h1{
     font-family:'Fraunces',serif;
@@ -46,6 +46,37 @@
     text-transform:uppercase;
     color:var(--muted);
   }
+
+  .cat-tabs{
+    display:flex;
+    gap:8px;
+    width:100%;
+    max-width:560px;
+    overflow-x:auto;
+    padding:16px 16px 4px;
+    scrollbar-width:none;
+  }
+  .cat-tabs::-webkit-scrollbar{display:none;}
+  .cat-tab{
+    flex-shrink:0;
+    border:1px solid var(--line);
+    background:#fff;
+    color:var(--muted);
+    font-family:'Work Sans',sans-serif;
+    font-size:12.5px;
+    font-weight:600;
+    padding:8px 14px;
+    border-radius:20px;
+    cursor:pointer;
+    white-space:nowrap;
+    transition:background .2s, color .2s, border-color .2s;
+  }
+  .cat-tab.active{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:#fff;
+  }
+
   .stage{
     width:100%;
     max-width:520px;
@@ -53,7 +84,7 @@
     align-items:center;
     justify-content:center;
     gap:6px;
-    padding:18px 8px 4px;
+    padding:10px 8px 4px;
     flex:1;
   }
   .nav-btn{
@@ -78,16 +109,14 @@
     touch-action:pan-y;
     user-select:none;
   }
-  .index-tab{
-    background:var(--accent);
-    color:#fff;
-    font-size:11px;
-    letter-spacing:1.5px;
+  .eyebrow{
+    margin:0 0 10px;
+    font-size:12px;
+    letter-spacing:2px;
     text-transform:uppercase;
-    padding:5px 14px;
-    border-radius:20px 20px 0 0;
+    color:var(--accent);
     font-weight:600;
-    transform:translateY(1px);
+    text-align:center;
   }
   .card{
     position:relative;
@@ -128,20 +157,11 @@
     background:var(--accent);
     display:inline-block;
   }
-  .eyebrow{
-    margin:18px 0 4px;
-    font-size:12px;
-    letter-spacing:2px;
-    text-transform:uppercase;
-    color:var(--accent);
-    font-weight:600;
-    text-align:center;
-  }
   .recipe-name{
     font-family:'Fraunces',serif;
     font-weight:600;
     font-size:clamp(21px,5vw,27px);
-    margin:2px 0 0;
+    margin:16px 0 0;
     text-align:center;
     line-height:1.25;
     min-height:1.3em;
@@ -235,19 +255,20 @@
 
 <header>
   <h1>Rețete</h1>
-  <p class="subtitle">Bucătăria românească</p>
+  <p class="subtitle">Bucătăria lumii</p>
 </header>
+
+<div class="cat-tabs" id="catTabs"></div>
 
 <div class="stage" id="stage">
   <button class="nav-btn" id="prevBtn" aria-label="Rețeta anterioară">‹</button>
 
   <div class="card-wrap" id="cardWrap">
-    <div class="index-tab" id="indexTab"></div>
+    <p class="eyebrow" id="eyebrow"></p>
     <div class="card" id="card">
       <img id="recipeImg" src="" alt="">
       <div class="hint-badge">Apasă pentru preparare</div>
     </div>
-    <p class="eyebrow" id="eyebrow"></p>
     <h2 class="recipe-name" id="recipeName"></h2>
     <p class="counter" id="counter"></p>
   </div>
@@ -278,190 +299,306 @@ function pexels(id){
   return 'https://images.pexels.com/photos/' + id + '/pexels-photo-' + id + '.jpeg?auto=compress&cs=tinysrgb&w=900';
 }
 
-var CAT1 = "Supe și ciorbe";
-var CAT2 = "Mâncăruri tradiționale românești";
-var CAT3 = "Garnituri și preparate simple";
+var CATEGORIES = [
+  {key:'supe', tab:'Supe & ciorbe', full:'Supe și ciorbe'},
+  {key:'ro', tab:'Mâncăruri românești', full:'Mâncăruri tradiționale românești'},
+  {key:'garnituri', tab:'Garnituri', full:'Garnituri și preparate simple'},
+  {key:'italia', tab:'Paste italiene', full:'Paste italiene'},
+  {key:'asia', tab:'Bucătărie asiatică', full:'Bucătărie asiatică (coreeană, japoneză, chinezească)'}
+];
+function catFull(key){
+  for(var i=0;i<CATEGORIES.length;i++){ if(CATEGORIES[i].key===key) return CATEGORIES[i].full; }
+  return '';
+}
 
 var recipes = [
-{cat:CAT1, name:"Supă de roșii cu tăiței de casă", img:commons("Tomato soup, grzanki.JPG"),
+{catKey:'supe', name:"Supă de roșii cu tăiței de casă", img:commons("Tomato soup, grzanki.JPG"),
  ing:["1 kg roșii sau bulion","1 ceapă","1 morcov","1 cartof","tăiței de casă","ulei, sare, piper","pătrunjel verde"],
  steps:["Călește ceapa și morcovul tăiate mărunt în ulei.","Adaugă roșiile sau bulionul și apă, lasă să fiarbă 20 de minute.","Pune cartofii cubulețe și fierbe până se înmoaie.","Adaugă tăițeii de casă și mai fierbe 5-7 minute.","Asezonează cu sare, piper și pătrunjel proaspăt."]},
 
-{cat:CAT1, name:"Supă de pui cu tăiței", img:pexels(30392957),
+{catKey:'supe', name:"Supă de pui cu tăiței", img:pexels(30392957),
  ing:["pulpe de pui","morcov, păstârnac, țelină","1 ceapă","tăiței","sare, piper"],
  steps:["Fierbe puiul cu legumele întregi în apă cu sare, la foc mic, 40-50 de minute, spumând des.","Scoate carnea, dezosează și taie cubulețe.","Strecoară supa și taie legumele felii.","Pune carnea, legumele și tăițeii înapoi în supă, mai fierbe 5 minute.","Drege cu pătrunjel verde proaspăt."]},
 
-{cat:CAT1, name:"Ciorbă de legume", img:pexels(1893563),
+{catKey:'supe', name:"Ciorbă de legume", img:pexels(1893563),
  ing:["cartofi, morcov, ardei","fasole verde","roșii","1 ceapă","borș sau zeamă acră","verdeață"],
  steps:["Călește ceapa și morcovul, apoi adaugă restul legumelor tăiate cubulețe.","Adaugă apă caldă și fierbe 20-25 de minute.","Pune roșiile și acrește cu borș sau zeamă de lămâie.","Mai fierbe 5 minute și presară verdeață la final."]},
 
-{cat:CAT1, name:"Ciorbă de cartofi", img:pexels(3559899),
+{catKey:'supe', name:"Ciorbă de cartofi", img:pexels(3559899),
  ing:["cartofi","1 ceapă, morcov, ardei","smântână","ou (opțional)","zeamă acră","leuștean"],
  steps:["Călește ceapa, morcovul și ardeiul în puțin ulei.","Adaugă cartofii cubulețe și apă, fierbe 20 de minute.","Acrește cu zeamă de varză sau lămâie.","Drege cu smântână și ou bătut, presară leuștean."]},
 
-{cat:CAT1, name:"Ciorbă de fasole", img:pexels(1907227),
+{catKey:'supe', name:"Ciorbă de fasole", img:pexels(1907227),
  ing:["fasole boabe înmuiată","afumătură sau costiță","1 ceapă, morcov, ardei","roșii","zeamă acră"],
  steps:["Fierbe fasolea în apă până se înmoaie pe jumătate.","Călește afumătura cu ceapa, morcovul și ardeiul.","Adaugă în oala de fasole, împreună cu roșiile.","Acrește la final și mai fierbe 10 minute la foc mic."]},
 
-{cat:CAT1, name:"Ciorbă de perișoare", img:pexels(27098505),
+{catKey:'supe', name:"Ciorbă de perișoare", img:pexels(27098505),
  ing:["carne tocată","orez","1 ceapă, ou","morcov, roșii","zeamă acră","leuștean"],
  steps:["Amestecă carnea cu orezul, ceapa rasă, oul și condimente, formează perișoare mici.","Pune la fiert într-o supă de legume cu morcov, ceapă și roșii.","Lasă să fiarbă 25-30 de minute, la foc mic.","Acrește cu zeamă de lămâie și presară leuștean."]},
 
-{cat:CAT1, name:"Ciorbă rădăuțeană", img:commons("Chicken soup.jpeg"),
+{catKey:'supe', name:"Ciorbă rădăuțeană", img:commons("Chicken soup.jpeg"),
  ing:["piept de pui","morcov, țelină","usturoi","smântână, ouă","oțet sau zeamă de lămâie"],
  steps:["Fierbe puiul cu legumele în apă cu sare, 40 de minute.","Scoate carnea, taie fâșii, strecoară supa.","Bate smântâna cu gălbenușurile și usturoiul pisat, drege supa fierbinte.","Adaugă carnea înapoi și acrește cu oțet, fără a mai fierbe tare."]},
 
-{cat:CAT1, name:"Ciorbă de pui a la grec", img:pexels(30392957),
+{catKey:'supe', name:"Ciorbă de pui a la grec", img:pexels(30392957),
  ing:["piept de pui","orez","morcov","ou, lămâie","smântână"],
  steps:["Fierbe puiul cu morcovul în apă cu sare.","Scoate carnea, taie cubulețe, strecoară zeama și adaugă orezul.","Fierbe orezul 15 minute.","Drege cu ou și zeamă de lămâie bătute cu puțină supă caldă, fără să mai fiarbă."]},
 
-{cat:CAT1, name:"Borș de pui", img:commons("Chicken soup.jpeg"),
+{catKey:'supe', name:"Borș de pui", img:commons("Chicken soup.jpeg"),
  ing:["pulpe de pui","morcov, țelină, ceapă","roșii","borș sau zeamă acră","verdeață"],
  steps:["Fierbe puiul cu legumele întregi, 40 de minute.","Scoate carnea, taie cubulețe, strecoară zeama.","Adaugă roșiile tăiate și mai fierbe 10 minute.","Acrește cu borș, adaugă carnea înapoi, presară verdeață."]},
 
-{cat:CAT1, name:"Supă de găluște", img:pexels(1907227),
+{catKey:'supe', name:"Supă de găluște", img:pexels(1907227),
  ing:["zeamă de carne sau legume","gris","ou","unt","pătrunjel"],
  steps:["Pregătește o supă de bază din legume sau carne.","Freacă untul cu oul, grișul și pătrunjelul pentru găluște.","Formează bilute mici cu o linguriță.","Fierbe găluștele direct în supa caldă 5-7 minute, până se umflă."]},
 
-{cat:CAT1, name:"Supă de ciuperci", img:pexels(2365940),
+{catKey:'supe', name:"Supă de ciuperci", img:pexels(2365940),
  ing:["ciuperci","1 ceapă","smântână","unt, făină","pătrunjel"],
  steps:["Călește ceapa în unt, adaugă ciupercile feliate.","Presară puțină făină și adaugă apă sau supă de legume.","Fierbe 15 minute la foc mic.","Drege cu smântână și pătrunjel proaspăt."]},
 
-{cat:CAT1, name:"Supă cremă de dovleac", img:pexels(17302314),
+{catKey:'supe', name:"Supă cremă de dovleac", img:pexels(17302314),
  ing:["dovleac","1 ceapă, cartof","smântână sau lapte","unt","nucșoară"],
  steps:["Călește ceapa în unt, adaugă dovleacul și cartoful cubulețe.","Adaugă apă sau supă și fierbe până se înmoaie.","Pasează cu blenderul până devine cremă fină.","Adaugă smântână, nucșoară și sare după gust."]},
 
-{cat:CAT1, name:"Ciorbă de varză", img:pexels(1893563),
+{catKey:'supe', name:"Ciorbă de varză", img:pexels(1893563),
  ing:["varză albă","afumătură","1 ceapă, morcov","roșii","zeamă acră"],
  steps:["Călește afumătura cu ceapa și morcovul.","Adaugă varza tăiată fideluță și apă.","Fierbe 25-30 de minute.","Acrește la final cu zeamă acră, mai fierbe 5 minute."]},
 
-{cat:CAT1, name:"Ciorbă de dovlecei", img:pexels(2365940),
+{catKey:'supe', name:"Ciorbă de dovlecei", img:pexels(2365940),
  ing:["dovlecei","1 ceapă, morcov","ou, smântână","leuștean"],
  steps:["Călește ceapa și morcovul, adaugă dovleceii cubulețe.","Adaugă apă și fierbe 15 minute.","Drege cu ou și smântână bătute împreună.","Presară leuștean proaspăt la final."]},
 
-{cat:CAT1, name:"Supă de roșii cu găluște", img:commons("Tomato soup, grzanki.JPG"),
+{catKey:'supe', name:"Supă de roșii cu găluște", img:commons("Tomato soup, grzanki.JPG"),
  ing:["roșii sau bulion","1 ceapă, morcov","gris, ou, unt"],
  steps:["Pregătește o supă de roșii ca la rețeta clasică.","Freacă untul cu oul și grișul pentru găluște.","Formează bilute mici cu o linguriță.","Fierbe-le în supă caldă 5-7 minute, până se umflă."]},
 
-{cat:CAT2, name:"Tocăniță de cartofi", img:commons("Tocăniță de murături.jpg"),
+{catKey:'ro', name:"Tocăniță de cartofi", img:commons("Tocăniță de murături.jpg"),
  ing:["cartofi","1 ceapă, ardei","roșii","boia, ulei","verdeață"],
  steps:["Călește ceapa în ulei, adaugă boia.","Pune cartofii cubulețe și ardeiul.","Adaugă roșiile sau bulionul și puțină apă.","Fierbe înăbușit 25-30 de minute, presară verdeață."]},
 
-{cat:CAT2, name:"Tocăniță de pui", img:commons("Tochitura-moldoveneasca.jpg"),
+{catKey:'ro', name:"Tocăniță de pui", img:commons("Tochitura-moldoveneasca.jpg"),
  ing:["pulpe de pui","1 ceapă, ardei","roșii","boia, usturoi"],
  steps:["Rumenește puiul în ulei, apoi scoate-l din tigaie.","Călește ceapa și ardeiul în aceeași tigaie.","Adaugă boia, roșiile și puiul înapoi.","Înăbușă cu capac 30-35 de minute, la foc mic."]},
 
-{cat:CAT2, name:"Tocăniță de porc", img:commons("Tochitura-moldoveneasca.jpg"),
+{catKey:'ro', name:"Tocăniță de porc", img:commons("Tochitura-moldoveneasca.jpg"),
  ing:["carne de porc","1 ceapă, ardei","roșii","boia, foi de dafin"],
  steps:["Rumenește carnea în ulei, pe toate părțile.","Adaugă ceapa și ardeiul, călește puțin.","Pune boia, roșiile și foile de dafin.","Înăbușă cu capac 40-50 de minute, până carnea e fragedă."]},
 
-{cat:CAT2, name:"Papricaș de pui", img:commons("Tochitura-moldoveneasca.jpg"),
+{catKey:'ro', name:"Papricaș de pui", img:commons("Tochitura-moldoveneasca.jpg"),
  ing:["pulpe de pui","1 ceapă, ardei","boia dulce","smântână, făină"],
  steps:["Călește ceapa în ulei, adaugă boia.","Pune puiul și ardeiul, rumenește puțin.","Adaugă apă și înăbușă 30 de minute cu capac.","Drege cu smântână amestecată cu puțină făină, mai fierbe 5 minute."]},
 
-{cat:CAT2, name:"Ciulama de pui", img:commons("Ciulama de pui.jpg"),
+{catKey:'ro', name:"Ciulama de pui", img:commons("Ciulama de pui.jpg"),
  ing:["piept de pui fiert","unt, făină","lapte sau supă","pătrunjel"],
  steps:["Fierbe puiul, scoate carnea și taie fâșii.","Topește untul, adaugă făina și călește puțin (rântaș).","Adaugă lapte sau supă strecurată, treptat, amestecând continuu.","Pune carnea în sos, fierbe 5 minute, presară pătrunjel."]},
 
-{cat:CAT2, name:"Ciulama de ciuperci", img:commons("Ciulama cu ciuperci de padure.jpg"),
+{catKey:'ro', name:"Ciulama de ciuperci", img:commons("Ciulama cu ciuperci de padure.jpg"),
  ing:["ciuperci","unt, făină","lapte sau supă","usturoi, pătrunjel"],
  steps:["Călește ciupercile feliate în unt, până lasă apa.","Presară făina și amestecă bine.","Adaugă lapte sau supă treptat, amestecând să nu facă cocoloașe.","Fierbe 10 minute, adaugă usturoi și pătrunjel."]},
 
-{cat:CAT2, name:"Mâncare de mazăre", img:pexels(1893563),
+{catKey:'ro', name:"Mâncare de mazăre", img:pexels(1893563),
  ing:["mazăre verde sau congelată","1 ceapă, morcov","ulei","pătrunjel"],
  steps:["Călește ceapa și morcovul în ulei.","Adaugă mazărea și puțină apă.","Fierbe înăbușit 15-20 de minute.","Presară pătrunjel proaspăt la final."]},
 
-{cat:CAT2, name:"Mâncare de fasole verde", img:pexels(185473),
+{catKey:'ro', name:"Mâncare de fasole verde", img:pexels(185473),
  ing:["fasole verde","1 ceapă","roșii","ulei, mărar"],
  steps:["Călește ceapa în ulei.","Adaugă fasolea verde tăiată și roșiile.","Adaugă puțină apă și înăbușă 20-25 de minute, cu capac.","Presară mărar proaspăt la final."]},
 
-{cat:CAT2, name:"Mâncare de spanac cu ou", img:pexels(2365940),
+{catKey:'ro', name:"Mâncare de spanac cu ou", img:pexels(2365940),
  ing:["spanac","1 ceapă, usturoi","ouă","smântână"],
  steps:["Călește ceapa și usturoiul.","Adaugă spanacul și lasă-l să se înmoaie.","Toarnă smântâna și omogenizează.","Fă mici cuiburi, spart ouăle peste și lasă 5 minute cu capac."]},
 
-{cat:CAT2, name:"Iahnie de fasole", img:pexels(1907227),
+{catKey:'ro', name:"Iahnie de fasole", img:pexels(1907227),
  ing:["fasole boabe","1 ceapă","roșii","ulei, foi de dafin"],
  steps:["Fierbe fasolea înmuiată până se înmoaie.","Călește ceapa, adaugă roșiile.","Combină cu fasolea fiartă și foile de dafin.","Fierbe împreună 15-20 de minute, la foc mic."]},
 
-{cat:CAT2, name:"Fasole scăzută cu cârnați", img:pexels(3559899),
+{catKey:'ro', name:"Fasole scăzută cu cârnați", img:pexels(3559899),
  ing:["fasole fiartă","cârnați","1 ceapă","roșii sau bulion","boia"],
  steps:["Rumenește cârnații feliați.","Călește ceapa în aceeași tigaie, adaugă boia.","Pune fasolea fiartă și bulionul.","Fierbe 15 minute, până sosul se îngroașă."]},
 
-{cat:CAT2, name:"Varză călită", img:commons("Tocăniță de murături.jpg"),
+{catKey:'ro', name:"Varză călită", img:commons("Tocăniță de murături.jpg"),
  ing:["varză albă","1 ceapă","roșii sau bulion","ulei, boia"],
  steps:["Călește ceapa în ulei, adaugă boia.","Pune varza tăiată fideluță.","Adaugă bulion și puțină apă.","Înăbușă 30-40 de minute, până varza e moale."]},
 
-{cat:CAT2, name:"Varză cu carne", img:commons("Tocăniță de murături.jpg"),
+{catKey:'ro', name:"Varză cu carne", img:commons("Tocăniță de murături.jpg"),
  ing:["varză","carne de porc","1 ceapă","roșii, boia","foi de dafin"],
  steps:["Rumenește carnea, apoi scoate-o din oală.","Călește ceapa, adaugă boia și varza.","Pune carnea înapoi, cu roșiile și foile de dafin.","Înăbușă 45-60 de minute, la foc mic."]},
 
-{cat:CAT2, name:"Ardei umpluți", img:commons("Sarmale.jpg"),
+{catKey:'ro', name:"Ardei umpluți", img:commons("Sarmale.jpg"),
  ing:["ardei grași","carne tocată, orez","1 ceapă","roșii pentru sos","mărar"],
  steps:["Amestecă carnea cu orezul, ceapa rasă, mărar și condimente.","Umple ardeii goliți cu acest amestec.","Așază-i într-o oală și acoperă cu sos de roșii.","Fierbe înăbușit 40-45 de minute."]},
 
-{cat:CAT2, name:"Sarmale (în porție mică)", img:commons("Sarmale.jpg"),
+{catKey:'ro', name:"Sarmale (în porție mică)", img:commons("Sarmale.jpg"),
  ing:["foi de varză murată","carne tocată, orez","1 ceapă","afumătură","bulion"],
  steps:["Amestecă carnea cu orezul, ceapa călită și condimente.","Pune o lingură din amestec pe fiecare foaie de varză și rulează.","Așază sarmalele în oală, cu afumătură între ele, adaugă bulion și apă.","Fierbe înăbușit 2-3 ore, la foc mic."]},
 
-{cat:CAT2, name:"Chiftele marinate", img:pexels(27098505),
+{catKey:'ro', name:"Chiftele marinate", img:pexels(27098505),
  ing:["carne tocată","pâine, ou","1 ceapă","roșii pentru sos","oțet"],
  steps:["Amestecă carnea cu pâinea înmuiată, oul, ceapa și condimente.","Formează chiftele și prăjește-le în ulei.","Pregătește un sos din roșii, oțet și puțin zahăr.","Pune chiftelele în sos și lasă la marinat la rece câteva ore."]},
 
-{cat:CAT2, name:"Ostropel de pui", img:commons("Tochitura-moldoveneasca.jpg"),
+{catKey:'ro', name:"Ostropel de pui", img:commons("Tochitura-moldoveneasca.jpg"),
  ing:["pulpe de pui","usturoi mult","roșii, ardei","vin alb (opțional)"],
  steps:["Rumenește puiul în ulei, până se rumenește bine.","Adaugă usturoiul pisat și ardeiul.","Pune roșiile (și vinul, opțional).","Înăbușă 30 de minute, până sosul se reduce."]},
 
-{cat:CAT2, name:"Ficăței de pui cu ceapă", img:commons("Chicken soup.jpeg"),
+{catKey:'ro', name:"Ficăței de pui cu ceapă", img:commons("Chicken soup.jpeg"),
  ing:["ficăței de pui","1 ceapă mare","ulei, boia","pătrunjel"],
  steps:["Călește ceapa în ulei până se înmoaie.","Adaugă ficățeii și prăjește 5-7 minute.","Presară boia și sare.","Stinge cu puțină apă, mai fierbe 5 minute, presară pătrunjel."]},
 
-{cat:CAT2, name:"Ghiveci de legume", img:pexels(1893563),
+{catKey:'ro', name:"Ghiveci de legume", img:pexels(1893563),
  ing:["cartofi, morcov","dovlecei, vinete","fasole verde","roșii, ardei"],
  steps:["Taie toate legumele cubulețe.","Călește ceapa, apoi adaugă legumele pe rând, de la cele mai tari.","Adaugă sosul de roșii și puțină apă.","Înăbușă 40 de minute, la foc mic, cu capac."]},
 
-{cat:CAT2, name:"Mâncare de vinete", img:pexels(2365940),
+{catKey:'ro', name:"Mâncare de vinete", img:pexels(2365940),
  ing:["vinete","1 ceapă, ardei","roșii, usturoi","ulei"],
  steps:["Taie vinetele cubulețe, lasă-le cu sare 10 minute să scoată apa.","Călește ceapa și ardeiul, adaugă vinetele.","Pune roșiile și usturoiul.","Înăbușă 25-30 de minute, până vinetele sunt moi."]},
 
-{cat:CAT3, name:"Mămăligă", img:commons("Tuci version 1.jpg"),
+{catKey:'garnituri', name:"Mămăligă", img:commons("Tuci version 1.jpg"),
  ing:["mălai","apă","sare"],
  steps:["Pune apa cu sare la fiert.","Presară mălaiul în ploaie, amestecând continuu.","Fierbe la foc mic 20-25 de minute, amestecând des cu un făcăleț.","Răstoarnă pe un fund de lemn când se desprinde de oală."]},
 
-{cat:CAT3, name:"Mămăligă cu brânză și smântână", img:commons("Tuci version 1.jpg"),
+{catKey:'garnituri', name:"Mămăligă cu brânză și smântână", img:commons("Tuci version 1.jpg"),
  ing:["mălai, apă, sare","brânză sărată sau telemea","smântână"],
  steps:["Prepară mămăliga ca la rețeta de bază.","Așază un strat de mămăligă, peste el brânză rasă sau fărâmițată.","Adaugă un strat de smântână.","Repetă straturile și servește caldă."]},
 
-{cat:CAT3, name:"Piure de cartofi", img:pexels(35799965),
+{catKey:'garnituri', name:"Piure de cartofi", img:pexels(35799965),
  ing:["cartofi","lapte","unt","sare"],
  steps:["Fierbe cartofii curățați în apă cu sare, până sunt moi.","Scurge apa și pasează cartofii.","Adaugă unt și lapte cald, amestecă bine.","Omogenizează până devine cremos."]},
 
-{cat:CAT3, name:"Cartofi țărănești", img:pexels(35799965),
+{catKey:'garnituri', name:"Cartofi țărănești", img:pexels(35799965),
  ing:["cartofi","ulei","boia, usturoi","verdeață"],
  steps:["Taie cartofii cuburi sau felii.","Călește-i în ulei până se rumenesc.","Presară boia și usturoi pisat la final.","Servește cu verdeață proaspătă."]},
 
-{cat:CAT3, name:"Cartofi natur cu unt și pătrunjel", img:pexels(35799965),
+{catKey:'garnituri', name:"Cartofi natur cu unt și pătrunjel", img:pexels(35799965),
  ing:["cartofi noi","unt","pătrunjel","sare"],
  steps:["Fierbe cartofii întregi (sau în jumătăți) în apă cu sare.","Scurge-i bine.","Pune untul peste cartofii calzi și amestecă să se topească.","Presară pătrunjel proaspăt tăiat mărunt."]},
 
-{cat:CAT3, name:"Pilaf cu legume", img:pexels(1893563),
+{catKey:'garnituri', name:"Pilaf cu legume", img:pexels(1893563),
  ing:["orez","morcov, mazăre","ardei, 1 ceapă","supă de legume"],
  steps:["Călește ceapa și legumile tăiate mărunt.","Adaugă orezul și amestecă 2 minute.","Pune supa de legume caldă, după proporția orezului.","Fierbe cu capac 15-18 minute, fără a amesteca des."]},
 
-{cat:CAT3, name:"Pilaf cu pui", img:commons("Chicken soup.jpeg"),
+{catKey:'garnituri', name:"Pilaf cu pui", img:commons("Chicken soup.jpeg"),
  ing:["orez","piept de pui","1 ceapă, morcov","supă de pui"],
  steps:["Călește ceapa și morcovul.","Adaugă puiul tăiat cubulețe și rumenește puțin.","Pune orezul, amestecă, apoi adaugă supa caldă.","Fierbe cu capac 15-18 minute, până orezul absoarbe lichidul."]},
 
-{cat:CAT3, name:"Orez cu ciuperci", img:commons("Ciulama cu ciuperci de padure.jpg"),
+{catKey:'garnituri', name:"Orez cu ciuperci", img:commons("Ciulama cu ciuperci de padure.jpg"),
  ing:["orez","ciuperci","1 ceapă","unt, supă"],
  steps:["Călește ceapa în unt, adaugă ciupercile feliate.","Pune orezul și amestecă 2 minute.","Adaugă supa caldă treptat.","Fierbe cu capac 15-18 minute, la foc mic."]},
 
-{cat:CAT3, name:"Sote de legume", img:pexels(2365940),
+{catKey:'garnituri', name:"Sote de legume", img:pexels(2365940),
  ing:["dovlecei, ardei","ciuperci, morcov","ulei de măsline","usturoi"],
  steps:["Taie toate legumele felii sau cubulețe similare.","Călește-le rapid în ulei încins, la foc mare.","Adaugă usturoiul spre final, ca să nu se ardă.","Sare, piper și servește imediat, cât sunt crocante."]},
 
-{cat:CAT3, name:"Fasole verde cu usturoi", img:pexels(185473),
+{catKey:'garnituri', name:"Fasole verde cu usturoi", img:pexels(185473),
  ing:["fasole verde","usturoi","ulei","oțet sau zeamă de lămâie"],
- steps:["Fierbe fasolea verde în apă cu sare, 10-12 minute.","Scurge-o bine.","Călește usturoiul pisat în ulei, fără să se rumenească.","Toarnă peste fasole și stropește cu oțet sau lămâie."]}
+ steps:["Fierbe fasolea verde în apă cu sare, 10-12 minute.","Scurge-o bine.","Călește usturoiul pisat în ulei, fără să se rumenească.","Toarnă peste fasole și stropește cu oțet sau lămâie."]},
+
+{catKey:'italia', name:"Spaghetti Carbonara", img:commons("Spaghetti alla Carbonara.jpg"),
+ ing:["spaghete","ouă","pancetta sau bacon","parmezan","piper negru"],
+ steps:["Fierbe spaghetele în apă cu sare, până sunt al dente.","Prăjește pancetta în tigaie până devine crocantă.","Bate ouăle cu parmezanul ras și piper.","Scurge pasta, amestec-o rapid cu pancetta și apoi cu amestecul de ou, departe de foc, ca să nu se taie.","Servește imediat cu parmezan și piper."]},
+
+{catKey:'italia', name:"Spaghetti Bolognese", img:commons("Spaghetti Bolognese.jpg"),
+ ing:["spaghete","carne tocată","1 ceapă, morcov, țelină","roșii sau bulion","vin roșu (opțional)"],
+ steps:["Călește ceapa, morcovul și țelina tăiate fin.","Adaugă carnea tocată și rumenește.","Pune bulionul de roșii și puțin vin, lasă să fiarbă înăbușit 30-40 de minute.","Fierbe spaghetele al dente.","Servește pasta cu sosul bolognese și parmezan."]},
+
+{catKey:'italia', name:"Penne all'Arrabbiata", img:commons("Penne all'arrabbiata.jpg"),
+ ing:["penne","roșii","usturoi","ardei iute","ulei de măsline, pătrunjel"],
+ steps:["Călește usturoiul și ardeiul iute în ulei de măsline, la foc mic.","Adaugă roșiile și fierbe sosul 15-20 de minute.","Fierbe penne al dente.","Combină pasta cu sosul picant, presară pătrunjel proaspăt."]},
+
+{catKey:'italia', name:"Fettuccine Alfredo", img:commons("Chicken fettuccine alfredo.JPG"),
+ ing:["fettuccine","unt","smântână pentru frișcă","parmezan","piept de pui (opțional)"],
+ steps:["Fierbe fettuccine al dente.","Topește untul, adaugă smântâna și lasă să se încălzească ușor.","Adaugă parmezanul ras, amestecă până se topește într-un sos cremos.","Combină pasta cu sosul, adaugă puiul fript dacă folosești."]},
+
+{catKey:'italia', name:"Lasagna", img:commons("Lasagna bolognese.jpg"),
+ ing:["foi de lasagna","carne tocată","sos de roșii","ricotta","mozzarella, parmezan"],
+ steps:["Pregătește un sos bolognese din carne și roșii.","Suprapune foi de lasagna, sos, ricotta și mozzarella în straturi, într-o tavă.","Repetă straturile, terminând cu brânză pe deasupra.","Coace la cuptor 35-40 de minute, până se rumenește."]},
+
+{catKey:'italia', name:"Paste cu pesto", img:commons("Pesto pasta.jpg"),
+ ing:["paste (trofie sau spaghete)","busuioc","usturoi, pin nuts","parmezan","ulei de măsline"],
+ steps:["Pregătește pesto blendând busuiocul, usturoiul, pin nuts, parmezanul și uleiul.","Fierbe pasta al dente.","Scurge-o, păstrând puțină apă de fiert.","Amestecă pasta caldă cu pesto, diluând cu apa de fiert dacă e nevoie."]},
+
+{catKey:'italia', name:"Spaghetti Aglio e Olio", img:commons("Spaghetti Aglio Olio Peperoncino.jpg"),
+ ing:["spaghete","usturoi","ulei de măsline","fulgi de ardei iute","pătrunjel"],
+ steps:["Fierbe spaghetele al dente.","Călește usturoiul feliat în ulei de măsline, la foc mic, fără să se rumenească tare.","Adaugă fulgi de ardei iute.","Combină pasta cu uleiul aromat, presară pătrunjel."]},
+
+{catKey:'italia', name:"Paste cu fructe de mare", img:commons("A Italian Seafood pasta.jpg"),
+ ing:["paste (linguine sau spaghete)","midii, creveți, calamari","roșii","usturoi","vin alb"],
+ steps:["Călește usturoiul în ulei de măsline.","Adaugă fructele de mare și prăjește scurt.","Stinge cu vin alb, adaugă roșiile și fierbe 10 minute.","Combină cu pasta fiartă al dente, presară pătrunjel."]},
+
+{catKey:'italia', name:"Ravioli cu brânză și spanac", img:commons("Ravioli Pasta della Casa.jpg"),
+ ing:["ravioli (cumpărați sau de casă)","ricotta","spanac","unt, salvie","parmezan"],
+ steps:["Fierbe ravioli în apă cu sare, până se ridică la suprafață.","Topește untul cu câteva foi de salvie.","Scurge ravioli și combină cu untul aromat.","Presară parmezan ras pe deasupra."]},
+
+{catKey:'italia', name:"Paste cu ciuperci și smântână", img:commons("Creamy Mushroom Pasta.jpg"),
+ ing:["paste (tagliatelle)","ciuperci","smântână","usturoi","parmezan, pătrunjel"],
+ steps:["Călește ciupercile feliate cu usturoiul, până se rumenesc.","Adaugă smântâna și lasă să se îngroașe puțin.","Fierbe pasta al dente, combină cu sosul.","Presară parmezan și pătrunjel."]},
+
+{catKey:'italia', name:"Tagliatelle cu somon", img:commons("A Italian Seafood pasta.jpg"),
+ ing:["tagliatelle","file de somon","smântână","usturoi, lămâie","mărar"],
+ steps:["Prăjește somonul în puțin ulei, apoi sfărâmă-l în bucăți.","Călește usturoiul, adaugă smântâna și puțină zeamă de lămâie.","Fierbe pasta al dente, combină cu sosul și somonul.","Presară mărar proaspăt."]},
+
+{catKey:'italia', name:"Paste cu vongole", img:commons("Spaghetti alle vongole.jpg"),
+ ing:["spaghete","scoici (vongole)","usturoi","vin alb","ulei de măsline, pătrunjel"],
+ steps:["Călește usturoiul în ulei de măsline.","Adaugă scoicile și vinul alb, acoperă și fierbe până se deschid scoicile.","Fierbe pasta al dente.","Combină pasta cu scoicile și sosul, presară pătrunjel."]},
+
+{catKey:'asia', name:"Bibimbap", img:commons("Bibimbap with side dishes.jpg"),
+ ing:["orez","carne de vită (sau tofu)","morcov, spanac, ciuperci","ou","sos gochujang"],
+ steps:["Fierbe orezul și gătește separat fiecare legumă, călite rapid.","Rumenește carnea de vită feliată fin.","Aranjează orezul într-un castron, cu legumele și carnea în jur.","Pune un ou prăjit pe mijloc și un strop de sos gochujang.","Amestecă totul înainte de a servi."]},
+
+{catKey:'asia', name:"Bulgogi", img:commons("Korean.food-Bulgogi-02.jpg"),
+ ing:["carne de vită feliată fin","sos de soia","usturoi, ghimbir","zahăr brun","ulei de susan"],
+ steps:["Marinează carnea în sos de soia, usturoi pisat, ghimbir, zahăr și ulei de susan, minim 30 de minute.","Încinge o tigaie sau un grătar.","Prăjește carnea rapid, la foc mare, pe ambele părți.","Servește cu orez și legume murate."]},
+
+{catKey:'asia', name:"Tteokbokki", img:commons("Tteokbokki.JPG"),
+ ing:["tteok (bastonașe de orez)","sos gochujang","apă, zahăr","ceapă verde","ou fiert (opțional)"],
+ steps:["Pune tteok-ul în apă caldă, ca să se înmoaie puțin.","Pregătește sosul din gochujang, apă și zahăr.","Fierbe bastonașele de orez în sos, amestecând des, până sosul se îngroașă.","Presară ceapă verde și servește cald, cu ou fiert dacă dorești."]},
+
+{catKey:'asia', name:"Kimchi (jjigae)", img:commons("Korean stew-Kimchi jjigae-05.jpg"),
+ ing:["kimchi fermentat","carne de porc sau tofu","1 ceapă, usturoi","sos de soia","ulei de susan"],
+ steps:["Călește kimchi-ul cu carnea de porc în ulei de susan.","Adaugă apă și usturoi, fierbe 15-20 de minute.","Adaugă tofu spre final, dacă folosești.","Servește fierbinte, cu orez alb."]},
+
+{catKey:'asia', name:"Japchae", img:commons("Korean cuisine-Japchae-04.jpg"),
+ ing:["tăiței de cartofi dulci (japchae)","morcov, spanac, ciuperci","carne de vită","sos de soia"],
+ steps:["Fierbe tăițeii japchae și clătește-i cu apă rece.","Călește separat morcovul, spanacul, ciupercile și carnea.","Combină tăițeii cu legumele, carnea, sos de soia și ulei de susan.","Amestecă bine la foc mic, câteva minute."]},
+
+{catKey:'asia', name:"Sushi (California roll)", img:commons("Three California rolls.jpg"),
+ ing:["orez de sushi","oțet de orez","alge nori","crab sau surimi","avocado, castravete"],
+ steps:["Pregătește orezul de sushi, asezonat cu oțet de orez.","Așază o foaie de nori pe o rolă de bambus, întinde orezul uniform.","Pune crabul, avocado și castravetele pe mijloc.","Rulează strâns cu ajutorul rolei, taie în bucăți egale."]},
+
+{catKey:'asia', name:"Ramen", img:commons("Ichiran Ramen.JPG"),
+ ing:["tăiței ramen","supă de oase sau de pui","sos de soia, miso","ouă fierte moi","carne de porc, ceapă verde"],
+ steps:["Pregătește o supă aromată din oase sau pui, fiartă mai multe ore.","Fierbe tăițeii ramen separat.","Asezonează supa cu sos de soia și miso.","Pune tăițeii în castron, adaugă supa, carnea, oul și ceapa verde."]},
+
+{catKey:'asia', name:"Teriyaki de pui", img:commons("Chicken teriyaki.jpg"),
+ ing:["piept de pui","sos de soia","sake sau vin alb","zahăr brun","ghimbir"],
+ steps:["Pregătește sosul teriyaki din sos de soia, sake, zahăr și ghimbir.","Prăjește puiul în tigaie până se rumenește pe ambele părți.","Adaugă sosul și lasă să se reducă, glazurând carnea.","Servește cu orez alb și legume."]},
+
+{catKey:'asia', name:"Yakisoba", img:commons("Yakisoba-Japanese-food.jpg"),
+ ing:["tăiței yakisoba","carne de porc","varză, morcov","sos yakisoba (sau soia + Worcester)"],
+ steps:["Călește carnea de porc feliată în tigaie.","Adaugă varza și morcovul, călește rapid la foc mare.","Pune tăițeii și sosul yakisoba, amestecă bine.","Prăjește 3-4 minute, până tăițeii se rumenesc puțin."]},
+
+{catKey:'asia', name:"Tempura", img:commons("Tempura.JPG"),
+ ing:["creveți și legume (dovlecel, morcov, ardei)","făină","apă rece, ou","ulei pentru prăjit"],
+ steps:["Pregătește aluatul tempura din făină, ou și apă rece, fără să amesteci prea mult.","Înmoaie creveții și legumele în aluat.","Prăjește în ulei încins, până devin crocante și aurii.","Scurge pe șervet de bucătărie și servește imediat, cu sos de soia."]},
+
+{catKey:'asia', name:"Orez prăjit chinezesc", img:commons("Fried rice schezwan style.jpg"),
+ ing:["orez fiert (de preferat de o zi)","ouă","morcov, mazăre","ceapă verde","sos de soia"],
+ steps:["Bate ouăle și prăjește-le rapid, sfărâmate, scoate-le din tigaie.","Călește morcovul și mazărea în ulei, la foc mare.","Adaugă orezul fiert, amestecă bine, desfăcând cocoloașele.","Pune ouăle înapoi, adaugă sos de soia și ceapă verde, mai prăjește 2-3 minute."]},
+
+{catKey:'asia', name:"Pui cu sos dulce-acrișor", img:commons("Sweet and sour chicken 5.jpg"),
+ ing:["piept de pui","ananas","ardei","oțet, zahăr","sos de roșii sau ketchup"],
+ steps:["Taie puiul cubulețe, prăjește-l până se rumenește.","Pregătește sosul din oțet, zahăr și sos de roșii, la foc mic.","Adaugă ardeiul și ananasul în sos, fierbe 5 minute.","Pune puiul în sos, amestecă bine și servește cu orez."]},
+
+{catKey:'asia', name:"Chow mein", img:commons("Chow mein.jpg"),
+ ing:["tăiței chow mein","piept de pui sau carne de vită","varză, morcov","sos de soia"],
+ steps:["Fierbe tăițeii și scurge-i bine.","Călește carnea la foc mare până se rumenește.","Adaugă legumele tăiate fâșii, călește rapid.","Pune tăițeii și sosul de soia, amestecă bine pe foc mare, 2-3 minute."]},
+
+{catKey:'asia', name:"Pui Kung Pao", img:commons("Kung Pao chicken (western version) -2.jpg"),
+ ing:["piept de pui","alune (arahide)","ardei iute, usturoi","sos de soia, oțet de orez"],
+ steps:["Taie puiul cubulețe, marinează scurt în sos de soia.","Călește usturoiul și ardeiul iute în ulei.","Adaugă puiul și prăjește până se rumenește.","Pune alunele și sosul (soia, oțet, puțin zahăr), amestecă 2-3 minute."]},
+
+{catKey:'asia', name:"Găluște chinezești (Jiaozi)", img:commons("Jiaozi.jpg"),
+ ing:["foi de aluat pentru găluște","carne tocată de porc","varză, ceapă verde","ghimbir, sos de soia"],
+ steps:["Amestecă carnea cu varza tăiată fin, ceapa verde, ghimbirul și sosul de soia.","Pune câte o linguriță din umplutură pe fiecare foaie, pliază și lipește marginile.","Fierbe găluștele în apă sau gătește-le la vapori, 8-10 minute.","Pot fi și prăjite ușor pe o parte, pentru o crustă crocantă. Servește cu sos de soia și oțet."]}
 ];
 
 var current = 0;
@@ -472,23 +609,43 @@ var img = document.getElementById('recipeImg');
 var eyebrow = document.getElementById('eyebrow');
 var nameEl = document.getElementById('recipeName');
 var counter = document.getElementById('counter');
-var indexTab = document.getElementById('indexTab');
 var swipeHint = document.getElementById('swipeHint');
 var overlay = document.getElementById('overlay');
-var popup = document.getElementById('popup');
 var popCategory = document.getElementById('popCategory');
 var popName = document.getElementById('popName');
 var popIngredients = document.getElementById('popIngredients');
 var popSteps = document.getElementById('popSteps');
+var catTabsEl = document.getElementById('catTabs');
+
+/* build category tabs */
+CATEGORIES.forEach(function(c){
+  var btn = document.createElement('button');
+  btn.className = 'cat-tab';
+  btn.textContent = c.tab;
+  btn.dataset.key = c.key;
+  btn.addEventListener('click', function(){
+    var idx = recipes.findIndex(function(r){ return r.catKey === c.key; });
+    if(idx !== -1) animateTo(idx, idx > current ? 1 : -1);
+  });
+  catTabsEl.appendChild(btn);
+});
+
+function updateTabs(){
+  var key = recipes[current].catKey;
+  var btns = catTabsEl.querySelectorAll('.cat-tab');
+  btns.forEach(function(b){
+    b.classList.toggle('active', b.dataset.key === key);
+  });
+}
 
 function renderContent(){
   var r = recipes[current];
   img.src = r.img;
   img.alt = r.name;
-  eyebrow.textContent = r.cat;
+  eyebrow.textContent = catFull(r.catKey);
   nameEl.textContent = r.name;
   counter.textContent = (current+1) + " / " + total;
-  indexTab.textContent = "Rețeta " + (current+1);
+  updateTabs();
 }
 
 function animateTo(newIndex, dir){
@@ -559,7 +716,7 @@ card.addEventListener('click', function(){
 
 function openPopup(){
   var r = recipes[current];
-  popCategory.textContent = r.cat;
+  popCategory.textContent = catFull(r.catKey);
   popName.textContent = r.name;
   popIngredients.innerHTML = '';
   r.ing.forEach(function(item){
