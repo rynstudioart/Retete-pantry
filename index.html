@@ -415,6 +415,7 @@ function normalize(s){
 }
 
 var CATEGORIES = [
+  {key:'breakfast', tab:'Breakfast', full:'Breakfast'},
   {key:'supe', tab:'Supe & ciorbe', full:'Supe și ciorbe'},
   {key:'ro', tab:'Mâncăruri românești', full:'Mâncăruri tradiționale românești'},
   {key:'garnituri', tab:'Garnituri', full:'Garnituri și preparate simple'},
@@ -428,6 +429,39 @@ function catFull(key){
 }
 
 var recipes = [
+
+{catKey:'breakfast', name:"Omletă pufoasă cu legume", img:commons("Vegetable omelette.jpg"),
+ ing:["3 ouă","1 ardei gras","2-3 ciuperci","puțin lapte","sare, piper","unt"],
+ steps:["Bate ouăle cu puțin lapte, sare și piper.","Călește ardeiul și ciupercile tăiate mărunt în unt, 3-4 minute.","Toarnă ouăle peste legume și lasă la foc mic, cu capac.","Pliază omleta în două când s-a închegat și servește caldă."]},
+
+{catKey:'breakfast', name:"Clătite americane (pancakes)", img:commons("Pancakes with syrup.jpg"),
+ ing:["200 g făină","2 ouă","250 ml lapte","1 lingură zahăr","1 plic praf de copt","unt pentru prăjit"],
+ steps:["Amestecă făina cu praful de copt și zahărul.","Adaugă ouăle și laptele treptat, omogenizând fără cocoloașe.","Coace pancakes-uri mici într-o tigaie unsă cu puțin unt, la foc mediu.","Întoarce-le când apar bule la suprafață, gătește 1-2 minute pe partea cealaltă.","Servește cu miere, sirop de arțar sau fructe."]},
+
+{catKey:'breakfast', name:"Shakshuka", img:commons("Shakshuka in pan.jpg"),
+ ing:["4 ouă","roșii sau bulion","1 ceapă, ardei","usturoi, boia","pătrunjel"],
+ steps:["Călește ceapa și ardeiul în ulei, până se înmoaie.","Adaugă usturoiul și boia, apoi roșiile, lasă să se reducă sosul 10-15 minute.","Fă mici cuiburi în sos și spart ouăle direct în el.","Acoperă cu capac și lasă 5-7 minute, până ouăle se coagulează.","Presară pătrunjel proaspăt și servește cu pâine."]},
+
+{catKey:'breakfast', name:"Iaurt cu granola și fructe", img:commons("Granola with yogurt and berries.jpg"),
+ ing:["iaurt grecesc","granola","fructe de pădure sau banană","miere"],
+ steps:["Pune un strat de iaurt într-un bol sau pahar.","Adaugă un strat de granola crocantă.","Pune fructele proaspete tăiate deasupra.","Stropește cu miere și servește imediat, cât granola e crocantă."]},
+
+{catKey:'breakfast', name:"Sandviș cu avocado și ou", img:commons("Avocado toast with egg.jpg"),
+ ing:["pâine integrală","1 avocado","1-2 ouă","sare, piper, fulgi de ardei iute"],
+ steps:["Prăjește feliile de pâine până devin crocante.","Zdrobește avocado cu furculița, asezonează cu sare și piper.","Întinde avocado pe pâine.","Pregătește un ou ochi sau poșat și pune-l deasupra.","Presară fulgi de ardei iute, după gust."]},
+
+{catKey:'breakfast', name:"Terci de ovăz cu fructe", img:commons("Oatmeal with fruits.jpg"),
+ ing:["fulgi de ovăz","lapte sau apă","banană sau mere","scorțișoară","miere"],
+ steps:["Fierbe fulgii de ovăz în lapte sau apă, la foc mic, 5-7 minute, amestecând des.","Adaugă scorțișoară spre final.","Toarnă terciul în bol și adaugă fructele tăiate felii.","Stropește cu miere și servește cald."]},
+
+{catKey:'breakfast', name:"Frittata cu cartofi și brânză", img:commons("Vegetable omelette.jpg"),
+ ing:["6 ouă","2 cartofi fierți","brânză rasă","1 ceapă verde","sare, piper"],
+ steps:["Călește cartofii fierți, tăiați cubulețe, în puțin ulei, până se rumenesc.","Bate ouăle cu sare, piper și brânza rasă.","Toarnă ouăle peste cartofi în tigaie, amestecă ușor.","Gătește la foc mic, cu capac, 8-10 minute, până se coagulează complet.","Presară ceapă verde tăiată fin și servește caldă."]},
+
+{catKey:'breakfast', name:"Smoothie bowl cu fructe", img:commons("Granola with yogurt and berries.jpg"),
+ ing:["fructe de pădure congelate","1 banană","iaurt sau lapte vegetal","topping: granola, semințe, fructe proaspete"],
+ steps:["Blendează fructele congelate cu banana și puțin iaurt sau lapte, până devine cremos, gen înghețată.","Toarnă compoziția într-un bol.","Decorează cu granola, semințe și fructe proaspete tăiate.","Servește imediat, cu o linguriță."]},
+
 {catKey:'supe', name:"Supă de roșii cu tăiței de casă", img:commons("Tomato soup, grzanki.JPG"),
  ing:["1 kg roșii sau bulion","1 ceapă","1 morcov","1 cartof","tăiței de casă","ulei, sare, piper","pătrunjel verde"],
  steps:["Călește ceapa și morcovul tăiate mărunt în ulei.","Adaugă roșiile sau bulionul și apă, lasă să fiarbă 20 de minute.","Pune cartofii cubulețe și fierbe până se înmoaie.","Adaugă tăițeii de casă și mai fierbe 5-7 minute.","Asezonează cu sare, piper și pătrunjel proaspăt."]},
@@ -571,10 +605,12 @@ var recipes = [
 {catKey:'garnituri', name:"Mămăligă", img:commons("Tuci version 1.jpg"),
  ing:["mălai","apă","sare"],
  steps:["Pune apa cu sare la fiert.","Presară mălaiul în ploaie, amestecând continuu.","Fierbe la foc mic 20-25 de minute, amestecând des cu un făcăleț.","Răstoarnă pe un fund de lemn când se desprinde de oală."]},
-{catKey:'garnituri', name:"Inele de dovlecel crocante", img:commons("Nume_exact_fisier.jpg"),
+
+{catKey:'garnituri', name:"Inele de dovlecel crocante", img:pexels(8753600),
  source:"https://www.instagram.com/reel/DZ99ffnqL8M/?igsh=MW4wNGpzaHlrbG9wYw==",
  ing:["1-2 dovlecei","făină","1-2 ouă","fulgi de porumb","pudră de ceapă","boia afumată","sare","piper","ulei pentru prăjit (opțional)"],
  steps:["Spală dovleceii și taie-i în rondele groase.","Îndepărtează mijlocul fiecărei rondele pentru a obține inele.","Mărunțește fulgii de porumb împreună cu pudra de ceapă, boiaua afumată, sarea și piperul.","Trece fiecare inel prin făină, apoi prin ou și la final prin amestecul de fulgi de porumb.","Prăjește în ulei încins sau coace la 180°C până devin aurii și crocante.","Servește calde, alături de sosul preferat."]},
+
 {catKey:'garnituri', name:"Mămăligă cu brânză și smântână", img:commons("Tuci version 1.jpg"),
  ing:["mălai, apă, sare","brânză sărată sau telemea","smântână"],
  steps:["Prepară mămăliga ca la rețeta de bază.","Așază un strat de mămăligă, peste el brânză rasă sau fărâmițată.","Adaugă un strat de smântână.","Repetă straturile și servește caldă."]},
@@ -718,10 +754,12 @@ var recipes = [
 {catKey:'asia', name:"Găluște chinezești (Jiaozi)", img:commons("Jiaozi.jpg"),
  ing:["foi de aluat pentru găluște","carne tocată de porc","varză, ceapă verde","ghimbir, sos de soia"],
  steps:["Amestecă carnea cu varza tăiată fin, ceapa verde, ghimbirul și sosul de soia.","Pune câte o linguriță din umplutură pe fiecare foaie, pliază și lipește marginile.","Fierbe găluștele în apă sau gătește-le la vapori, 8-10 minute.","Pot fi și prăjite ușor pe o parte, pentru o crustă crocantă. Servește cu sos de soia și oțet."]},
+
 {catKey:'desert', name:"Biluțe din brânză dulce", img:commons("2012-12-31 Quarkbällchen.jpg"),
  source:null,
  ing:["500 g brânză de vaci","2 ouă","4 linguri zahăr","1 linguriță extract de vanilie","200 g făină","1 plic praf de copt","ulei pentru prăjit"],
  steps:["Pune brânza, ouăle, zahărul și vanilia într-un bol și mixează până obții o compoziție omogenă.","Adaugă făina și praful de copt și amestecă până rezultă un aluat moale și ușor lipicios.","Cu mâinile umezite formează biluțe mici.","Prăjește-le în ulei încins 3-4 minute, până devin aurii.","Scoate-le pe hârtie absorbantă și servește-le simple sau pudrate cu zahăr."]},
+
 {catKey:'desert', name:"Orez cu lapte la cuptor", img:commons("Turkish rice pudding (sütlaç).jpg"),
  source:"https://www.instagram.com/reel/DXL7ZveEyKX/?igsh=MXVmN2JiMmJkZ3JqeA==",
  ing:["1 pahar orez","2 pahare apă","un praf de sare","1 litru lapte","2 linguri amidon","4 linguri zahăr","3 gălbenușuri","2 linguri extract de vanilie"],
